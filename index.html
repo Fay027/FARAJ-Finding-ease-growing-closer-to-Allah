@@ -442,13 +442,39 @@ const DHIKR = [
   { key: 'istighfar', title: 'Daily Istighfar', sub: 'Seeking forgiveness & peace of heart' },
 ];
 
-const state = {
-  totalTrees: 0,
-  hasBloomedToday: false,
-  prayers: Object.fromEntries(PRAYER_NAMES.map((n) => [n, { fard: false, sunnah: false }])),
-  dhikr: Object.fromEntries(DHIKR.map((d) => [d.key, false])),
+const DAY_KEY = 'faraj_today';
+const todayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
+const state = { totalTrees: 0, date: '', hasBloomedToday: false, prayers: {}, dhikr: {} };
+
+// Start a fresh day: all ticks cleared, but the tree total is untouched
+function resetDay() {
+  state.date = todayKey();
+  state.hasBloomedToday = false;
+  state.prayers = Object.fromEntries(PRAYER_NAMES.map((n) => [n, { fard: false, sunnah: false }]));
+  state.dhikr = Object.fromEntries(DHIKR.map((d) => [d.key, false]));
+}
+function saveDay() {
+  try {
+    localStorage.setItem(DAY_KEY, JSON.stringify({ date: state.date, prayers: state.prayers, dhikr: state.dhikr, bloomed: state.hasBloomedToday }));
+  } catch (e) {}
+}
+// Restore today's ticks if they were saved today; anything saved on an earlier day is ignored
+function loadDay() {
+  resetDay();
+  try {
+    const s = JSON.parse(localStorage.getItem(DAY_KEY));
+    if (s && s.date === state.date) {
+      PRAYER_NAMES.forEach((n) => { if (s.prayers && s.prayers[n]) state.prayers[n] = { fard: !!s.prayers[n].fard, sunnah: !!s.prayers[n].sunnah }; });
+      DHIKR.forEach((d) => { if (s.dhikr) state.dhikr[d.key] = !!s.dhikr[d.key]; });
+      state.hasBloomedToday = !!s.bloomed;
+    }
+  } catch (e) {}
+}
 try { const s = localStorage.getItem(STORE_KEY); if (s !== null) state.totalTrees = parseInt(s, 10) || 0; } catch (e) {}
+loadDay();
 
 const drops = () =>
   Object.values(state.prayers).reduce((n, p) => n + p.fard + p.sunnah, 0) + Object.values(state.dhikr).filter(Boolean).length;
@@ -494,6 +520,7 @@ function updateGarden() {
     state.totalTrees += 1;
     try { localStorage.setItem(STORE_KEY, String(state.totalTrees)); } catch (e) {}
   }
+  saveDay();
   const s = stageFor(d);
   $('treeCount').textContent = `${state.totalTrees} ${state.totalTrees === 1 ? 'Tree' : 'Trees'}`;
   $('stageLevel').textContent = s.level.toUpperCase();
@@ -513,6 +540,13 @@ function updateGarden() {
   });
 }
 buildGarden();
+
+// If the app is open when midnight passes (or is reopened the next day), start a fresh day
+function checkNewDay() {
+  if (todayKey() !== state.date) { resetDay(); updateGarden(); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkNewDay(); });
+setInterval(checkNewDay, 60000);
 </script>
 </body>
 </html>
