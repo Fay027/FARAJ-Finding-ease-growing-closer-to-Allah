@@ -117,6 +117,9 @@ hr{border:0;height:1px;background:rgba(0,0,0,.1);margin:24px 0}
 .ad .translit{font-size:13px;font-style:italic;margin-bottom:12px;opacity:.85}
 .ad .tr{font-size:15px;line-height:24px;margin-bottom:4px}
 .ad .src{font-size:12px;opacity:.8}
+.part{padding-bottom:20px;margin-bottom:20px;border-bottom:1px solid rgba(0,0,0,.1)}
+.part:last-child{border:0;padding-bottom:0;margin-bottom:8px}
+.plabel{font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:10px;opacity:.85}
 .stag{display:inline-block;background:var(--pink);padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:1.5px;margin-bottom:12px}
 .cnt{display:flex;gap:8px;margin-top:20px}
 .tap{flex:1;min-height:52px;border-radius:999px;background:var(--pink);border:1px solid var(--pink-b);font-size:15px;font-weight:600}
@@ -582,17 +585,28 @@ const card = (id, title, count, arabic, transliteration, translation, source, vi
 const ADHKAR = {
   morning: { label: 'Morning', hint: 'Traditionally recited after Fajr.', cards: [
   card('m-kursi', 'Ayat al-Kursi (The Verse of the Throne)', 1,
-    'أَعُوْذُ بِاللّٰهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ. اَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَىُّ الْقَيُّوْمُ ، لَا تَأْخُذُهُۥ سِنَةٌ وَّلَا نَوْمٌ ، لَهُ مَا فِى السَّمٰـوٰتِ وَمَا فِى الْأَرْضِ ، مَنْ ذَا الَّذِىْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِۦ ، يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ، وَلَا يُحِيْطُوْنَ بِشَىْءٍ مِّنْ عِلْمِهِٓ إِلَّا بِمَا شَآءَ ، وَسِعَ كُرْسِيُّهُ السَّمٰـوٰتِ وَالْأَرْضَ، وَلَا يَئُوْدُهُۥ حِفْظُهُمَا ، وَهُوَ الْعَلِىُّ الْعَظِيْمُ.',
-    "A'ūdhu bi-llāhi mina-sh-Shayṭāni-r-rajīm. Allāhu lā ilāha illā Huwa-l-Ḥayyu-l-Qayyūm, lā ta'khudhuhū sinatuw-wa lā nawm, lahū mā fi-s-samāwāti wa mā fi-l-arḍ, man dhā-lladhī yashfa'u 'indahū illā bi-idhnih, ya'lamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bi-shay'im-min 'ilmihī illā bi-mā shā', wasi'a kursiyyuhu-s-samāwāti wa-l-arḍ, wa lā ya'ūduhū ḥifẓuhumā wa Huwa-l-'Aliyyu-l-'Aẓīm.",
-    'I seek refuge in Allah from the rejected Satan. Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Magnificent. (2:255)',
+    'أَعُوْذُ بِاللّٰهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ.\nاَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَىُّ الْقَيُّوْمُ ، لَا تَأْخُذُهُۥ سِنَةٌ وَّلَا نَوْمٌ ، لَهُ مَا فِى السَّمٰـوٰتِ وَمَا فِى الْأَرْضِ ، مَنْ ذَا الَّذِىْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِۦ ، يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ، وَلَا يُحِيْطُوْنَ بِشَىْءٍ مِّنْ عِلْمِهِٓ إِلَّا بِمَا شَآءَ ، وَسِعَ كُرْسِيُّهُ السَّمٰـوٰتِ وَالْأَرْضَ، وَلَا يَئُوْدُهُۥ حِفْظُهُمَا ، وَهُوَ الْعَلِىُّ الْعَظِيْمُ.',
+    "A'ūdhu bi-llāhi mina-sh-Shayṭāni-r-rajīm.\n\nAllāhu lā ilāha illā Huwa-l-Ḥayyu-l-Qayyūm, lā ta'khudhuhū sinatuw-wa lā nawm, lahū mā fi-s-samāwāti wa mā fi-l-arḍ, man dhā-lladhī yashfa'u 'indahū illā bi-idhnih, ya'lamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bi-shay'im-min 'ilmihī illā bi-mā shā', wasi'a kursiyyuhu-s-samāwāti wa-l-arḍ, wa lā ya'ūduhū ḥifẓuhumā wa Huwa-l-'Aliyyu-l-'Aẓīm.",
+    'I seek refuge in Allah from the rejected Satan.\n\nAllah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Magnificent. (2:255)',
     "Al-Hakim in Al-Mustadrak (2064), Al-Tabarani in Al-Mu'jam al-Kabeer (511); authenticated by Al-Albani in Sahih al-Targhib (655)",
     'Reciting this verse in the morning establishes a divine shield that protects the believer from jinn and unseen harm until the evening.'),
-  card('m-quls', 'The Three Protection Chapters (Al-Ikhlas, Al-Falaq, An-Nas)', 3,
-    'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ. قُلْ هُوَ اللّٰهُ أَحَدٌ ، اَللّٰهُ الصَّمَدُ ، لَمْ يَلِدْ وَلَمْ يُوْلَدْ ، وَلَمْ يَكُنْ لَّهُ كُفُوًا أَحَدٌ.\n\nبِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ. قُلْ أَعُوْذُ بِرَبِّ الْفَلَقِ ، مِنْ شَرِّ مَا خَلَقَ ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ.\n\nبِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ. قُلْ أَعُوْذُ بِرَبِّ النَّاسِ ، مَلِكِ النَّاسِ ، إِلٰهِ النَّاسِ ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ، اَلَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِ ، مِنَ الْجِنَّةِ وَالنَّاسِ.',
-    "Bismi-llāhi-r-Raḥmāni-r-Raḥīm. Qul Huwa-llāhu Aḥad. Allāhu-ṣ-Ṣamad. Lam yalid wa lam yūlad. Wa lam yakul-lahū kufuwan aḥad.\n\nBismi-llāhi-r-Raḥmāni-r-Raḥīm. Qul a'ūdhu bi-Rabbi-l-falaq. Min sharri mā khalaq. Wa min sharri ghāsiqin idhā waqab. Wa min sharri-n-naffāthāti fi-l-'uqad. Wa min sharri ḥāsidin idhā ḥasad.\n\nBismi-llāhi-r-Raḥmāni-r-Raḥīm. Qul a'ūdhu bi-Rabbi-n-nās. Maliki-n-nās. Ilāhi-n-nās. Min sharri-l-waswāsi-l-khannās. Al-ladhī yuwaswisu fī ṣudūri-n-nās. Mina-l-jinnati wa-n-nās.",
-    'Al-Ikhlas: In the name of Allah, the All-Merciful, the Very Merciful. Say: He is Allah, [who is] One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent.\n\nAl-Falaq: In the name of Allah, the All-Merciful, the Very Merciful. Say: I seek refuge in the Lord of daybreak from the evil of that which He created, and from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies.\n\nAn-Nas: In the name of Allah, the All-Merciful, the Very Merciful. Say: I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer who whispers into the breasts of mankind, from among the jinn and mankind.',
+  { ...card('m-quls', 'The Three Protection Chapters (Al-Ikhlas, Al-Falaq, An-Nas)', 3, '', '', '',
     "Sunan Abu Dawud (5082), Jami' at-Tirmidhi (3575); graded Hasan by Al-Albani",
     'The Prophet ﷺ stated that reciting these three chapters three times every morning and evening will suffice you against all harm. (Recite all three, three times.)'),
+    parts: [
+      { label: 'SURAH AL-IKHLAS',
+        arabic: 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ.\nقُلْ هُوَ اللّٰهُ أَحَدٌ ، اَللّٰهُ الصَّمَدُ ، لَمْ يَلِدْ وَلَمْ يُوْلَدْ ، وَلَمْ يَكُنْ لَّهُ كُفُوًا أَحَدٌ.',
+        transliteration: "Bismi-llāhi-r-Raḥmāni-r-Raḥīm.\n\nQul Huwa-llāhu Aḥad. Allāhu-ṣ-Ṣamad. Lam yalid wa lam yūlad. Wa lam yakul-lahū kufuwan aḥad.",
+        translation: 'In the name of Allah, the All-Merciful, the Very Merciful.\n\nSay: He is Allah, [who is] One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent.' },
+      { label: 'SURAH AL-FALAQ',
+        arabic: 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ.\nقُلْ أَعُوْذُ بِرَبِّ الْفَلَقِ ، مِنْ شَرِّ مَا خَلَقَ ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ.',
+        transliteration: "Bismi-llāhi-r-Raḥmāni-r-Raḥīm.\n\nQul a'ūdhu bi-Rabbi-l-falaq. Min sharri mā khalaq. Wa min sharri ghāsiqin idhā waqab. Wa min sharri-n-naffāthāti fi-l-'uqad. Wa min sharri ḥāsidin idhā ḥasad.",
+        translation: 'In the name of Allah, the All-Merciful, the Very Merciful.\n\nSay: I seek refuge in the Lord of daybreak from the evil of that which He created, and from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies.' },
+      { label: 'SURAH AN-NAS',
+        arabic: 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ.\nقُلْ أَعُوْذُ بِرَبِّ النَّاسِ ، مَلِكِ النَّاسِ ، إِلٰهِ النَّاسِ ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ، اَلَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِ ، مِنَ الْجِنَّةِ وَالنَّاسِ.',
+        transliteration: "Bismi-llāhi-r-Raḥmāni-r-Raḥīm.\n\nQul a'ūdhu bi-Rabbi-n-nās. Maliki-n-nās. Ilāhi-n-nās. Min sharri-l-waswāsi-l-khannās. Al-ladhī yuwaswisu fī ṣudūri-n-nās. Mina-l-jinnati wa-n-nās.",
+        translation: 'In the name of Allah, the All-Merciful, the Very Merciful.\n\nSay: I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer who whispers into the breasts of mankind, from among the jinn and mankind.' },
+    ] },
   card('m-sayyid', 'Sayyid al-Istighfar (The Master of Forgiveness)', 1,
     'اَللّٰهُمَّ أَنْتَ رَبِّيْ لَا إِلٰهَ إِلَّا أَنْتَ ، خَلَقْتَنِيْ وَأَنَا عَبْدُكَ ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ ، أَعُوْذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ ، أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوْءُ لَكَ بِذَنْبِيْ ، فَاغْفِرْ لِيْ فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ.',
     "Allāhumma Anta Rabbī, lā ilāha illā Ant, khalaqtanī wa ana 'abduk, wa ana 'alā 'ahdika wa wa'dika mā-staṭa't, a'ūdhu bika min sharri mā ṣana't, abū'u laka bi-ni'matika 'alayya wa abū'u laka bi-dhambī, fa-ghfir lī fa-innahū lā yaghfiru-dh-dhunūba illā Ant.",
@@ -735,6 +749,75 @@ const ADHKAR = {
   evening: { label: 'Evening', hint: 'Traditionally recited after Asr.', cards: [sample('e-sample-1', 1), sample('e-sample-2', 3)] },
   bed: { label: 'Before Bed', hint: 'For as you settle into bed. Separate from the evening adhkar.', cards: [sample('b-sample-1', 1), sample('b-sample-2', 3)] },
 };
+/* Evening cards: most are the same dhikr as Morning, so they reuse the Morning text and only change what differs */
+const MC = (id) => ADHKAR.morning.cards.find((c) => c.id === id);
+const ev = (mid, virtue, o = {}) => ({ ...MC(mid), id: 'e-' + mid.slice(2), virtue, ...o });
+ADHKAR.evening.cards = [
+  ev('m-kursi', 'Reciting this verse in the evening establishes a divine shield that protects the believer from jinn and unseen harm until the morning.'),
+  ev('m-quls', 'Reciting these three chapters three times in the evening provides complete protection against all harm through the night until morning. (Recite all three, three times.)'),
+  ev('m-sayyid', 'Guaranteed Paradise. Whoever recites it at night with firm faith and passes away before morning will be among the people of Paradise.'),
+  ev('m-anxiety', MC('m-anxiety').virtue, { source: 'Sahih al-Bukhari (2893, 6369)' }),
+  ev('m-wellbeing', 'Grants complete physical, spiritual, and situational protection through the night.'),
+  ev('m-fatir', 'Protects the heart from harmful desires and evil influences during the night.'),
+  ev('m-hayy', 'Expresses complete reliance on Allah (Tawakkul) to manage every affair as the day turns into night.'),
+  card('e-thanks', 'Dua of Daily Gratitude for Evening Favours', 1,
+    'اَللّٰهُمَّ مَا أَمْسَى بِيْ مِنْ نِّعْمَةٍ أَوْ بِأَحَدٍ مِّنْ خَلْقِكَ ، فَمِنْكَ وَحْدَكَ لَا شَرِيْكَ لَكَ ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.',
+    "Allāhumma mā amsā bī min ni'matin aw bi-aḥadim-min khalqik, fa-minka waḥdaka lā sharīka lak, fa laka-l-ḥamdu wa laka-sh-shukr.",
+    'O Allah, whatever favour has come to me or to any of Your creation this evening is from You alone, without partner. To You belongs all praise and to You belongs all thanks.',
+    'Sunan Abu Dawud (5073), Sahih Ibn Hibban (861); graded Hasan by Ibn Hajar',
+    'Fulfills the duty of gratitude owed to Allah for all blessings received during the day.'),
+  card('e-fitrah', 'Affirmation of Faith upon the Fitrah', 1,
+    'أَمْسَيْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ ، وَعَلَىٰ دِيْنِ نَبِيِّنَا مُحَمَّدٍ ، وَعَلَىٰ مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفًا مُّسْلِمًا وَّمَا كَانَ مِنَ الْمُشْرِكِيْنَ.',
+    "Amsaynā 'alā fiṭrati-l-islām, wa 'alā kalimati-l-ikhlāṣ, wa 'alā dīni Nabiyyinā Muḥammadin ṣallallāhu 'alayhi wa sallam, wa 'alā millati abīnā Ibrāhīma ḥanīfam-muslima, wa mā kāna min-l-mushrikīn.",
+    'We have entered the evening upon the natural disposition of Islam, upon the word of pure faith, upon the religion of our Prophet Muhammad ﷺ, and upon the way of our father Abraham, inclined toward truth, a Muslim, and he was not of those who associate partners with Allah.',
+    "Musnad Ahmad (15360), Sunan al-Darimi (2689); authenticated by Al-Albani in Sahih al-Jami' (4674)",
+    'Re-anchors the soul upon pure monotheism as the day ends.'),
+  card('e-praise', 'Evening Declaration of Praise and Testimony', 3,
+    'أَمْسَيْتُ أُثْنِيْ عَلَيْكَ حَمْدًا ، وَأَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا اللّٰهُ.',
+    "Amsaytu uthnī 'alayka ḥamdā, wa ash-hadu al-lā ilāha illā-Allāh.",
+    'I have entered the evening praising You, and I bear witness that there is no deity except Allah.',
+    "Sunan an-Nasa'i in Amal al-Yawm wal-Laylah (571); graded Sahih by Al-Albani",
+    'Reaffirms Tawhid and gratitude at dusk.'),
+  card('e-goodnight', 'Asking for the Good of the Night and Protection from Its Evil', 1,
+    'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلّٰهِ وَالْحَمْدُ لِلّٰهِ ، لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيْكَ لَهُ ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِيْ هٰذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِيْ هٰذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا ، رَبِّ أَعُوْذُ بِكَ مِنَ الْكَسَلِ وَسُوْءِ الْكِبَرِ ، رَبِّ أَعُوْذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.',
+    "Amsaynā wa amsa-l-mulku li-llāh, wa-l-ḥamdu li-llāh, lā ilāha illa-llāhu waḥdahū lā sharīka lah, lahu-l-mulku wa lahu-l-ḥamd, wa huwa 'alā kulli shay'in Qadīr, Rabbi as'aluka khayra mā fī hādhihi-l-laylati wa khayra mā ba'dahā, wa a'ūdhu bika min sharri mā fī hādhihi-l-laylati wa sharri mā ba'dahā. Rabbi a'ūdhu bika mina-l-kasali wa sū'i-l-kibar, Rabbi a'ūdhu bika min 'adhābin fi-n-nāri wa 'adhābin fi-l-qabr.",
+    'We have entered the evening, and the entire kingdom belongs to Allah, and all praise is for Allah. There is no deity except Allah alone, without partner. To Him belongs sovereignty and to Him belongs praise, and He is over all things Omnipotent. My Lord, I ask You for the good of this night and the good of what follows it, and I seek refuge in You from the evil of this night and the evil of what follows it. My Lord, I seek refuge in You from laziness and the hardship of old age. My Lord, I seek refuge in You from punishment in the Fire and punishment in the grave.',
+    'Sahih Muslim (2723)',
+    'Asks for safety, spiritual light, and protection throughout the night.'),
+  card('e-victory', 'Supplication for Victory, Light, and Blessings of the Night', 1,
+    'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ ، اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ خَيْرَ هٰذِهِ اللَّيْلَةِ ، فَتْحَهَا وَنَصْرَهَا وَنُوْرَهَا وَبَرَكَتَهَا وَهُدَاهَا ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِيْهَا وَشَرِّ مَا بَعْدَهَا.',
+    "Amsaynā wa amsa-l-mulku li-llāhi Rabbi-l-'ālamīn, Allāhumma innī as'aluka khayra hādhihi-l-laylah, fatḥahā wa naṣrahā wa nūrahā wa barakatahā wa hudāhā, wa a'ūdhu bika min sharri mā fīhā wa sharri mā ba'dahā.",
+    'We have entered the evening, and the entire kingdom belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of this night: its opening, its victory, its light, its blessings, and its guidance; and I seek refuge in You from the evil within it and the evil of what follows it.',
+    'Sunan Abu Dawud (5084); graded Hasan by Ibn Hajar',
+    'Invokes divine light and blessings for the night hours.'),
+  card('e-witness', 'Call of All Creation to Bear Witness to Tawhid', 4,
+    'اَللّٰهُمَّ إِنِّيْ أَمْسَيْتُ أُشْهِدُكَ ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ وَمَلَائِكَتَكَ وَجَمِيْعَ خَلْقِكَ ، أَنَّكَ أَنْتَ اللّٰهُ لَا إِلٰهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيْكَ لَكَ ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُوْلُكَ.',
+    "Allāhumma innī amsaytu ush-hiduk, wa ush-hidu ḥamlata 'arshik, wa malā'ikatika wa jamī'a khalqik, an-naka Anta-llāhu lā ilāha illā Anta waḥdak, lā sharīka lak, wa anna Muḥammadan 'abduka wa rasūluk.",
+    'O Allah, I have entered the evening and I call You, the bearers of Your Throne, Your angels, and all Your creation to bear witness that You are Allah; there is no deity except You alone, without partner, and that Muhammad is Your servant and Messenger.',
+    'Sunan Abu Dawud (5069)',
+    'Saying this four times at night grants protection from the Fire.'),
+  card('e-life', 'Evening Affirmation of Life and Final Return', 1,
+    'اَللّٰهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوْتُ وَإِلَيْكَ الْمَصِيْرُ.',
+    "Allāhumma bika amsaynā wa bika aṣbaḥnā wa bika naḥyā wa bika namūtu wa ilayka-l-maṣīr.",
+    'O Allah, by You we enter the evening and by You we enter the morning, by You we live and by You we die, and to You is the final return.',
+    "Jami' at-Tirmidhi (3391), Sunan Abu Dawud (5068); rated Sahih by Al-Albani",
+    "Acknowledges Allah's complete control over life, death, and our ultimate return (maṣīr)."),
+  ev('m-health', 'Shields health and finances while seeking safety from punishment in the grave.'),
+  ev('m-hasbi', 'Protects against all worldly and spiritual distress throughout the night.', { source: 'Sunan Abu Dawud (5081)' }),
+  ev('m-radhitu', "Earns Allah's pleasure and satisfaction on the Day of Judgment."),
+  ev('m-shield', 'Prevents sudden harm or unexpected afflictions until morning.'),
+  ev('m-subhan100', 'Cleanses sins and earns vast spiritual rewards.'),
+  ev('m-tahleel', 'A powerful protection against evil forces and a source of immense reward.'),
+  ev('m-general', 'Keeps the tongue moist with the remembrance of Allah.'),
+  ev('m-salawat', 'Brings ten blessings from Allah for each recitation and secures intercession.', { source: 'Sahih al-Bukhari (3370), Sahih Muslim (406)' }),
+  ev('m-istighfar', "Cleanses the day's shortcomings through daily repentance."),
+  card('e-creatures', 'Seeking Refuge from Poisonous Creatures (Evening Specific)', 3,
+    'أَعُوْذُ بِكَلِمَاتِ اللّٰهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.',
+    "A'ūdhu bi-kalimāti-llāhi-t-tāmmāti min sharri mā khalaq.",
+    'I seek refuge in the perfect words of Allah from the evil of what He has created.',
+    "Sahih Muslim (2709), Jami' at-Tirmidhi (3604)",
+    'Reciting this three times in the evening protects against bites and stings from venomous creatures or poisonous insects during the night.'),
+];
 const AD_KEY = 'faraj_adhkar';
 let adSection = 'morning';
 const adState = { date: '', counts: {} };
@@ -758,6 +841,7 @@ function adCard(c) {
   return `<div class="card ad${fin ? ' fin' : ''}">
     ${c.sample ? '<div class="stag">SAMPLE CARD</div>' : ''}
     <h3>${esc(c.title)}</h3>
+    ${c.parts ? `<div class="parts">${c.parts.map((p) => `<div class="part"><div class="plabel">${esc(p.label)}</div><div class="arabic">${esc(p.arabic)}</div><div class="translit">${esc(p.transliteration).replace(/'/g, '’')}</div><div class="tr">${esc(p.translation)}</div></div>`).join('')}</div>` : ''}
     ${c.arabic ? `<div class="${isAr ? 'arabic' : 'ph'}">${esc(c.arabic)}</div>` : ''}
     ${c.transliteration ? `<div class="translit">${esc(c.transliteration).replace(/'/g, '’')}</div>` : ''}
     ${c.translation ? `<div class="tr">“${esc(c.translation)}”</div>` : ''}
