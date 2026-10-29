@@ -102,6 +102,27 @@ hr{border:0;height:1px;background:rgba(0,0,0,.1);margin:24px 0}
 .dh b{display:block;font-size:15px;font-weight:600}
 .dh small{display:block;font-size:12px;margin-top:2px;opacity:.8}
 .dh .ck{width:24px;height:24px}
+
+/* adhkar */
+.seg{display:flex;gap:4px;background:rgba(181,196,169,.35);padding:4px;border-radius:999px;margin-bottom:24px}
+.seg button{flex:1;padding:10px 4px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);min-height:40px}
+.seg button.on{background:var(--green);color:var(--ink);box-shadow:var(--shadow)}
+.adprog{text-align:center;margin-top:4px;margin-bottom:24px}
+.ad{padding:24px;margin-bottom:16px;text-align:center}
+.ad.fin{opacity:.8}
+.ad h3{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:12px}
+.ad .arabic{font-size:24px;margin-bottom:8px}
+.ad .arabic,.ad .translit,.ad .tr{white-space:pre-line}
+.ad .ph{font-size:14px;opacity:.7;margin-bottom:8px}
+.ad .translit{font-size:13px;font-style:italic;margin-bottom:12px;opacity:.85}
+.ad .tr{font-size:15px;line-height:24px;margin-bottom:4px}
+.ad .src{font-size:12px;opacity:.8}
+.stag{display:inline-block;background:var(--pink);padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:1.5px;margin-bottom:12px}
+.cnt{display:flex;gap:8px;margin-top:20px}
+.tap{flex:1;min-height:52px;border-radius:999px;background:var(--pink);border:1px solid var(--pink-b);font-size:15px;font-weight:600}
+.tap:active{transform:scale(.98)}
+.tap.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.undo{width:52px;min-height:52px;border-radius:999px;background:rgba(255,255,255,.5);font-size:20px}
 @media(prefers-reduced-motion:reduce){.chip{animation:none}}
 </style>
 </head>
@@ -109,12 +130,14 @@ hr{border:0;height:1px;background:rgba(0,0,0,.1);margin:24px 0}
 <main id="screens">
   <section id="home" class="screen active"></section>
   <section id="feel" class="screen"></section>
+  <section id="adhkar" class="screen"></section>
   <section id="garden" class="screen"></section>
 </main>
 <nav id="tabbar">
   <button class="tab active" data-screen="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg><span>Home</span></button>
   <button class="tab" data-screen="feel"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 5.7-8 11-8 11z"/></svg><span>How I Feel</span></button>
   <button class="tab" data-screen="garden"><svg viewBox="0 0 24 24"><path d="M12 22V11M12 11c0-4 2-7 6-8 0 4-2 7-6 8zM12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg><span>Garden</span></button>
+  <button class="tab" data-screen="adhkar"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h5v16H6a2 2 0 00-2 2V5zM20 5a2 2 0 00-2-2h-5v16h5a2 2 0 012 2V5z"/></svg><span>Adhkar</span></button>
 </nav>
 <script>
 const VERSES = [
@@ -544,9 +567,244 @@ buildGarden();
 // If the app is open when midnight passes (or is reopened the next day), start a fresh day
 function checkNewDay() {
   if (todayKey() !== state.date) { resetDay(); updateGarden(); }
+  checkAdhkarDay();
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) checkNewDay(); });
 setInterval(checkNewDay, 60000);
+
+/* ---------- Adhkar (Morning / Evening / Before Bed) ---------- */
+/* Each card: { id, title, arabic, transliteration, translation, source, virtue, count }
+   - id must be unique and should never change once people use the app (it is how progress is saved)
+   - count = how many times it is recited (1 shows a simple "done" button)
+   - delete `sample: true` (or replace the whole sample() card) once you add real, verified text */
+const sample = (id, count) => ({ id, sample: true, count, title: 'Sample dhikr', arabic: 'Arabic text goes here', transliteration: 'Transliteration goes here', translation: 'Translation goes here', source: 'Source goes here', virtue: 'Virtue (from an authentic hadith) goes here' });
+const card = (id, title, count, arabic, transliteration, translation, source, virtue) => ({ id, title, count, arabic, transliteration, translation, source, virtue });
+const ADHKAR = {
+  morning: { label: 'Morning', hint: 'Traditionally recited after Fajr.', cards: [
+  card('m-kursi', 'Ayat al-Kursi (The Verse of the Throne)', 1,
+    'أَعُوْذُ بِاللّٰهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ. اَللّٰهُ لَآ إِلٰهَ إِلَّا هُوَ الْحَىُّ الْقَيُّوْمُ ، لَا تَأْخُذُهُۥ سِنَةٌ وَّلَا نَوْمٌ ، لَهُ مَا فِى السَّمٰـوٰتِ وَمَا فِى الْأَرْضِ ، مَنْ ذَا الَّذِىْ يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِۦ ، يَعْلَمُ مَا بَيْنَ أَيْدِيْهِمْ وَمَا خَلْفَهُمْ ، وَلَا يُحِيْطُوْنَ بِشَىْءٍ مِّنْ عِلْمِهِٓ إِلَّا بِمَا شَآءَ ، وَسِعَ كُرْسِيُّهُ السَّمٰـوٰتِ وَالْأَرْضَ، وَلَا يَئُوْدُهُۥ حِفْظُهُمَا ، وَهُوَ الْعَلِىُّ الْعَظِيْمُ.',
+    "A'ūdhu bi-llāhi mina-sh-Shayṭāni-r-rajīm. Allāhu lā ilāha illā Huwa-l-Ḥayyu-l-Qayyūm, lā ta'khudhuhū sinatuw-wa lā nawm, lahū mā fi-s-samāwāti wa mā fi-l-arḍ, man dhā-lladhī yashfa'u 'indahū illā bi-idhnih, ya'lamu mā bayna aydīhim wa mā khalfahum, wa lā yuḥīṭūna bi-shay'im-min 'ilmihī illā bi-mā shā', wasi'a kursiyyuhu-s-samāwāti wa-l-arḍ, wa lā ya'ūduhū ḥifẓuhumā wa Huwa-l-'Aliyyu-l-'Aẓīm.",
+    'I seek refuge in Allah from the rejected Satan. Allah! There is no deity except Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Magnificent. (2:255)',
+    "Al-Hakim in Al-Mustadrak (2064), Al-Tabarani in Al-Mu'jam al-Kabeer (511); authenticated by Al-Albani in Sahih al-Targhib (655)",
+    'Reciting this verse in the morning establishes a divine shield that protects the believer from jinn and unseen harm until the evening.'),
+  card('m-quls', 'The Three Protection Chapters (Al-Ikhlas, Al-Falaq, An-Nas)', 3,
+    'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ. قُلْ هُوَ اللّٰهُ أَحَدٌ ، اَللّٰهُ الصَّمَدُ ، لَمْ يَلِدْ وَلَمْ يُوْلَدْ ، وَلَمْ يَكُنْ لَّهُ كُفُوًا أَحَدٌ.\n\nبِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ. قُلْ أَعُوْذُ بِرَبِّ الْفَلَقِ ، مِنْ شَرِّ مَا خَلَقَ ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ.\n\nبِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ. قُلْ أَعُوْذُ بِرَبِّ النَّاسِ ، مَلِكِ النَّاسِ ، إِلٰهِ النَّاسِ ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ، اَلَّذِيْ يُوَسْوِسُ فِيْ صُدُوْرِ النَّاسِ ، مِنَ الْجِنَّةِ وَالنَّاسِ.',
+    "Bismi-llāhi-r-Raḥmāni-r-Raḥīm. Qul Huwa-llāhu Aḥad. Allāhu-ṣ-Ṣamad. Lam yalid wa lam yūlad. Wa lam yakul-lahū kufuwan aḥad.\n\nBismi-llāhi-r-Raḥmāni-r-Raḥīm. Qul a'ūdhu bi-Rabbi-l-falaq. Min sharri mā khalaq. Wa min sharri ghāsiqin idhā waqab. Wa min sharri-n-naffāthāti fi-l-'uqad. Wa min sharri ḥāsidin idhā ḥasad.\n\nBismi-llāhi-r-Raḥmāni-r-Raḥīm. Qul a'ūdhu bi-Rabbi-n-nās. Maliki-n-nās. Ilāhi-n-nās. Min sharri-l-waswāsi-l-khannās. Al-ladhī yuwaswisu fī ṣudūri-n-nās. Mina-l-jinnati wa-n-nās.",
+    'Al-Ikhlas: In the name of Allah, the All-Merciful, the Very Merciful. Say: He is Allah, [who is] One. Allah, the Eternal Refuge. He neither begets nor is born, nor is there to Him any equivalent.\n\nAl-Falaq: In the name of Allah, the All-Merciful, the Very Merciful. Say: I seek refuge in the Lord of daybreak from the evil of that which He created, and from the evil of darkness when it settles, and from the evil of the blowers in knots, and from the evil of an envier when he envies.\n\nAn-Nas: In the name of Allah, the All-Merciful, the Very Merciful. Say: I seek refuge in the Lord of mankind, the Sovereign of mankind, the God of mankind, from the evil of the retreating whisperer who whispers into the breasts of mankind, from among the jinn and mankind.',
+    "Sunan Abu Dawud (5082), Jami' at-Tirmidhi (3575); graded Hasan by Al-Albani",
+    'The Prophet ﷺ stated that reciting these three chapters three times every morning and evening will suffice you against all harm. (Recite all three, three times.)'),
+  card('m-sayyid', 'Sayyid al-Istighfar (The Master of Forgiveness)', 1,
+    'اَللّٰهُمَّ أَنْتَ رَبِّيْ لَا إِلٰهَ إِلَّا أَنْتَ ، خَلَقْتَنِيْ وَأَنَا عَبْدُكَ ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ ، أَعُوْذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ ، أَبُوْءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوْءُ لَكَ بِذَنْبِيْ ، فَاغْفِرْ لِيْ فَإِنَّهُ لَا يَغْفِرُ الذُّنُوْبَ إِلَّا أَنْتَ.',
+    "Allāhumma Anta Rabbī, lā ilāha illā Ant, khalaqtanī wa ana 'abduk, wa ana 'alā 'ahdika wa wa'dika mā-staṭa't, a'ūdhu bika min sharri mā ṣana't, abū'u laka bi-ni'matika 'alayya wa abū'u laka bi-dhambī, fa-ghfir lī fa-innahū lā yaghfiru-dh-dhunūba illā Ant.",
+    'O Allah, You are my Lord. There is no deity except You. You created me, and I am Your servant, and I uphold Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favour upon me, and I confess my sin to You. Forgive me, for none forgives sins except You.',
+    'Sahih al-Bukhari (6306)',
+    'Guaranteed Paradise. Whoever recites it during the day with conviction and dies before evening will be among the people of Paradise.'),
+  card('m-anxiety', 'Dua for Relief from Anxiety, Laziness, and Debt', 1,
+    'اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ ، وَأَعُوْذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوْذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ ، وَأَعُوْذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ.',
+    "Allāhumma innī a'ūdhu bika min-l-hammi wa-l-ḥazan, wa a'ūdhu bika min-l-'ajzi wa-l-kasal, wa a'ūdhu bika min-l-jubni wa-l-bukhl, wa a'ūdhu bika min ghalabati-d-dayni wa qahri-r-rijāl.",
+    'O Allah, I seek refuge in You from anxiety and sorrow. I seek refuge in You from helplessness and laziness. I seek refuge in You from cowardice and stinginess, and I seek refuge in You from being overwhelmed by debt and overcome by men.',
+    'Sahih al-Bukhari (2893, 6369). (The wording of this supplication is authentically established in Bukhari; the separate narrative of Abu Umamah sitting in the mosque is in Abu Dawud 1555.)',
+    'Provides relief from mental burdens, emotional distress, physical apathy, and financial bondage.'),
+  card('m-wellbeing', 'Dua for Well-being in Faith, World, Family, and Wealth', 1,
+    'اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ ، اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِيْ دِيْنِيْ وَدُنْيَايَ وَأَهْلِيْ وَمَالِيْ ، اَللّٰهُمَّ اسْتُرْ عَوْرَاتِيْ وَآمِنْ رَوْعَاتِيْ ، اَللّٰهُمَّ احْفَظْنِيْ مِنْ بَيْنِ يَدَيَّ ، وَمِنْ خَلْفِيْ ، وَعَنْ يَّمِيْنِيْ ، وَعَنْ شِمَالِيْ ، وَمِنْ فَوْقِيْ ، وَأَعُوْذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِيْ.',
+    "Allāhumma innī as'aluka-l-'āfiyata fi-d-dunyā wa-l-ākhirah. Allāhumma innī as'aluka-l-'afwa wa-l-'āfiyata fī dīnī wa dunyāya wa ahlī wa mālī, Allāhumma-stur 'awrātī wa āmin raw'ātī. Allāhumma-ḥfaẓnī mim bayni yadayya wa min khalfī, wa 'an yamīnī wa 'an shimālī wa min fawqī, wa a'ūdhu bi-'aẓamatika an ughtāla min taḥtī.",
+    'O Allah, I ask You for well-being in this world and the Hereafter. O Allah, I ask You for pardon and well-being in my religion, my worldly affairs, my family, and my wealth. O Allah, conceal my faults and calm my fears. O Allah, guard me from in front of me and from behind me, from my right and from my left, and from above me; and I seek refuge in Your majesty from being unexpectedly destroyed from beneath me.',
+    "Sunan Abu Dawud (5074), Sunan an-Nasa'i (5333); rated Sahih by Al-Albani",
+    'Grants complete physical, spiritual, and situational protection in all directions throughout the day.'),
+  card('m-fatir', 'Dua for Protection from Personal Evil and Satan', 1,
+    'اَللّٰهُمَّ فَاطِرَ السَّمٰوَاتِ وَالْأَرْضِ ، عَالِمَ الْغَيْبِ وَالشَّهَادَةِ ، رَبَّ كُلِّ شَيْءٍ وَّمَلِيْكَهُ ، أَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا أَنْتَ ، أَعُوْذُ بِكَ مِنْ شَرِّ نَفْسِيْ ، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ ، وَأَنْ أَقْتَرِفَ عَلَىٰ نَفْسِيْ سُوْءًا أَوْ أَجُرَّهُ إِلَىٰ مُسْلِمٍ.',
+    "Allāhumma fāṭira-s-samāwāti wa-l-arḍ, 'ālima-l-ghaybi wa-sh-shahādah, rabba kulli shay'iw-wa malīkah, ash-hadu al-lā ilāha illā Ant, a'ūdhu bika min sharri nafsī wa min sharri-sh-shayṭāni wa shirkihī wa an aqtarifa 'alā nafsī sū'an aw ajurrahū ilā muslim.",
+    'O Allah, Creator of the heavens and the earth, Knower of the unseen and the witnessed, Lord and Sovereign of everything: I bear witness that there is no deity except You. I seek refuge in You from the evil of my own self, from the evil of Satan and his polytheism, and from committing evil against myself or bringing it upon a Muslim.',
+    "Jami' at-Tirmidhi (3392, 3529)",
+    'Taught by the Prophet ﷺ to Abu Bakr (RA) to protect against inner sinful impulses and external demonic misguidance.'),
+  card('m-hayy', "Dua for Seeking Allah's Help and Rectification", 1,
+    'يَا حَيُّ يَا قَيُّوْمُ ، بِرَحْمَتِكَ أَسْتَغِيْثُ ، أَصْلِحْ لِيْ شَأْنِيْ كُلَّهُ ، وَلَا تَكِلْنِيْ إِلَىٰ نَفْسِيْ طَرْفَةَ عَيْنٍ.',
+    "Yā Ḥayyu yā Qayyūm, bi-raḥmatika astaghīth, aṣliḥ lī sha'nī kullah, wa lā takilnī ilā nafsī ṭarfata 'ayn.",
+    'O Ever-Living, O Sustainer of all existence, by Your mercy I seek assistance. Rectify all my affairs for me, and do not entrust me to myself even for the blink of an eye.',
+    "Al-Mustadrak by Al-Hakim (1900), Sunan al-Nasa'i al-Kubra (10405); authenticated by Al-Albani in Sahih al-Targhib (661)",
+    'Expresses complete reliance on Allah (Tawakkul), asking Him to manage all affairs without leaving us to our own weak ego.'),
+  card('m-thanks', 'Dua of Daily Gratitude for Morning Favours', 1,
+    'اَللّٰهُمَّ مَا أَصْبَحَ بِيْ مِنْ نِّعْمَةٍ أَوْ بِأَحَدٍ مِّنْ خَلْقِكَ ، فَمِنْكَ وَحْدَكَ لَا شَرِيْكَ لَكَ ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.',
+    "Allāhumma mā aṣbaḥa bī min ni'matin aw bi-aḥadim-min khalqik, fa-minka waḥdaka lā sharīka lak, fa laka-l-ḥamdu wa laka-sh-shukr.",
+    'O Allah, whatever favour has come to me or to any of Your creation this morning is from You alone, without partner. To You belongs all praise and to You belongs all thanks.',
+    'Sunan Abu Dawud (5073), Sahih Ibn Hibban (861); graded Hasan by Ibn Hajar. (Some scholars like Al-Albani noted weakness in its chain, but it remains widely recited as a virtuous morning adhkar.)',
+    'Fulfills the obligation of gratitude owed to Allah for the blessings of that day.'),
+  card('m-fitrah', 'Affirmation of Faith upon the Fitrah', 1,
+    'أَصْبَحْنَا عَلَىٰ فِطْرَةِ الْإِسْلَامِ ، وَعَلَىٰ كَلِمَةِ الْإِخْلَاصِ ، وَعَلَىٰ دِيْنِ نَبِيِّنَا مُحَمَّدٍ ، وَعَلَىٰ مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفًا مُّسْلِمًا وَّمَا كَانَ مِنَ الْمُشْرِكِيْنَ.',
+    "Aṣbaḥnā 'alā fiṭrati-l-islām, wa 'alā kalimati-l-ikhlāṣ, wa 'alā dīni Nabiyyinā Muḥammadin ṣallallāhu 'alayhi wa sallam, wa 'alā millati abīnā Ibrāhīma ḥanīfam-muslima, wa mā kāna min-l-mushrikīn.",
+    'We have entered the morning upon the natural disposition of Islam, upon the word of pure faith, upon the religion of our Prophet Muhammad ﷺ, and upon the way of our father Abraham, inclined toward truth, a Muslim, and he was not of those who associate partners with Allah.',
+    "Musnad Ahmad (15360), Sunan al-Darimi (2689); authenticated by Al-Albani in Sahih al-Jami' (4674)",
+    'Renews daily commitment to pure monotheism and alignment with the prophetic tradition.'),
+  card('m-praise', 'Morning Declaration of Praise and Testimony', 3,
+    'أَصْبَحْتُ أُثْنِيْ عَلَيْكَ حَمْدًا ، وَأَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا اللّٰهُ.',
+    "Aṣbaḥtu uthnī 'alayka ḥamdā, wa ash-hadu al-lā ilāha illā-Allāh.",
+    'I have entered the morning praising You, and I bear witness that there is no deity except Allah.',
+    "Sunan an-Nasa'i in Amal al-Yawm wal-Laylah (571); graded Sahih by Al-Albani",
+    'Directly glorifies Allah at sunrise and reaffirms the testimony of Tawhid.'),
+  card('m-goodday', 'Asking for the Good of the Day and Protection from Its Evil', 1,
+    'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلّٰهِ وَالْحَمْدُ لِلّٰهِ ، لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيْكَ لَهُ ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِيْ هٰذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِيْ هٰذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ ، رَبِّ أَعُوْذُ بِكَ مِنَ الْكَسَلِ وَسُوْءِ الْكِبَرِ ، رَبِّ أَعُوْذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.',
+    "Aṣbaḥnā wa aṣbaḥa-l-mulku li-llāh, wa-l-ḥamdu li-llāh, lā ilāha illa-llāhu waḥdahū lā sharīka lah, lahu-l-mulku wa lahu-l-ḥamd, wa huwa 'alā kulli shay'in Qadīr, Rabbi as'aluka khayra mā fī hādha-l-yawmi wa khayra mā ba'dah, wa a'ūdhu bika min sharri mā fī hādha-l-yawmi wa sharri mā ba'dah. Rabbi a'ūdhu bika mina-l-kasali wa sū'i-l-kibar, Rabbi a'ūdhu bika min 'adhābin fi-n-nāri wa 'adhābin fi-l-qabr.",
+    'We have entered the morning, and the entire kingdom belongs to Allah, and all praise is for Allah. There is no deity except Allah alone, without partner. To Him belongs sovereignty and to Him belongs praise, and He is over all things Omnipotent. My Lord, I ask You for the good of this day and the good of what follows it, and I seek refuge in You from the evil of this day and the evil of what follows it. My Lord, I seek refuge in You from laziness and the hardship of old age. My Lord, I seek refuge in You from punishment in the Fire and punishment in the grave.',
+    'Sahih Muslim (2723)',
+    'Establishes morning dominion for Allah while seeking comprehensive success and protection from lethargy and punishment.'),
+  card('m-victory', 'Supplication for Victory, Light, and Blessings', 1,
+    'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلّٰهِ رَبِّ الْعَالَمِيْنَ ، اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ خَيْرَ هٰذَا الْيَوْمِ ، فَتْحَهُ وَنَصْرَهُ وَنُوْرَهُ وَبَرَكَتَهُ وَهُدَاهُ ، وَأَعُوْذُ بِكَ مِنْ شَرِّ مَا فِيْهِ وَشَرِّ مَا بَعْدَهُ.',
+    "Aṣbaḥnā wa aṣbaḥa-l-mulku li-llāhi Rabbi-l-'ālamīn, Allāhumma innī as'aluka khayra hādha-l-yawm, fatḥahū wa naṣrahū wa nūrahū wa barakatahū wa hudāh, wa a'ūdhu bika min sharri mā fīhi wa sharri mā ba'dah.",
+    'We have entered the morning, and the entire kingdom belongs to Allah, Lord of the worlds. O Allah, I ask You for the good of this day: its opening, its victory, its light, its blessings, and its guidance; and I seek refuge in You from the evil within it and the evil of what follows it.',
+    'Sunan Abu Dawud (5084); graded Hasan by Ibn Hajar',
+    'Asks Allah to unlock opportunities (fat-h), grant strength over challenges (nasr), and illuminate choices (nūr and hudā).'),
+  card('m-witness', 'Call of All Creation to Bear Witness to Tawhid', 4,
+    'اَللّٰهُمَّ إِنِّيْ أَصْبَحْتُ أُشْهِدُكَ ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ وَمَلَائِكَتَكَ وَجَمِيْعَ خَلْقِكَ ، أَنَّكَ أَنْتَ اللّٰهُ لَا إِلٰهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيْكَ لَكَ ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُوْلُكَ.',
+    "Allāhumma innī aṣbaḥtu ush-hiduk, wa ush-hidu ḥamlata 'arshik, wa malā'ikatika wa jamī'a khalqik, an-naka Anta-llāhu lā ilāha illā Anta waḥdak, lā sharīka lak, wa anna Muḥammadan 'abduka wa rasūluk.",
+    'O Allah, I have entered the morning and I call You, the bearers of Your Throne, Your angels, and all Your creation to bear witness that You are Allah; there is no deity except You alone, without partner, and that Muhammad is Your servant and Messenger.',
+    'Sunan Abu Dawud (5069). (Scholars differ on its grading, but reciting it four times carries the traditional virtue of freedom from the Fire.)',
+    'Saying this four times in the morning is reported to completely free the reciter from the punishment of Hellfire.'),
+  card('m-life', 'Morning Affirmation of Life and Resurrection', 1,
+    'اَللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوْتُ وَإِلَيْكَ النُّشُوْرُ.',
+    "Allāhumma bika aṣbaḥnā wa bika amsaynā wa bika naḥyā wa bika namūtu wa ilayka-n-nushūr.",
+    'O Allah, by You we have entered the morning and by You we enter the evening, by You we live and by You we die, and to You is the resurrection.',
+    "Jami' at-Tirmidhi (3391), Sunan Abu Dawud (5068); rated Sahih by Al-Albani",
+    "Connects the routine of waking up each morning to Allah's sovereignty over life, death, and final resurrection (nushūr)."),
+  card('m-health', 'Supplication for Physical Health and Defense Against Poverty', 3,
+    'اَللّٰهُمَّ عَافِنِيْ فِيْ بَدَنِيْ ، اَللّٰهُمَّ عَافِنِيْ فِيْ سَمْعِيْ ، اَللّٰهُمَّ عَافِنِيْ فِيْ بَصَرِيْ ، لَا إِلٰهَ إِلَّا أَنْتَ ، اَللّٰهُمَّ إِنِّيْ أَعُوْذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ ، وَأَعُوْذُ بِكَ مِنْ عَذَابِ الْقَبْرِ ، لَا إِلٰهَ إِلَّا أَنْتَ.',
+    "Allāhumma 'āfinī fī badanī, Allāhumma 'āfinī fī sam'ī, Allāhumma 'āfinī fī baṣarī, lā ilāha illā Ant, Allāhumma innī a'ūdhu bika mina-l-kufri wa-l-faqr, wa a'ūdhu bika min 'adhābi-l-qabr, lā ilāha illā Ant.",
+    'O Allah, grant me well-being in my body. O Allah, grant me well-being in my hearing. O Allah, grant me well-being in my sight. There is no deity except You. O Allah, I seek refuge in You from disbelief and poverty, and I seek refuge in You from the punishment of the grave. There is no deity except You.',
+    'Sunan Abu Dawud (5090), Musnad Ahmad (20430); rated Hasan by Al-Albani',
+    'Protects vital physical senses (hearing and sight) while seeking safety from spiritual decay, economic distress, and punishment in the grave.'),
+  card('m-hasbi', 'The Affirmation of Sufficiency (Hasbiyallah)', 7,
+    'حَسْبِيَ اللّٰهُ لَا إِلٰهَ إِلَّا هُوَ ، عَلَيْهِ تَوَكَّلْتُ ، وَهُوَ رَبُّ الْعَرْشِ الْعَظِيْمِ.',
+    "Ḥasbiya-Allāhu lā ilāha illā Huwa, 'alayhi tawakkaltu, wa Huwa Rabbu-l-'Arshi-l-'aẓīm.",
+    'Allah is sufficient for me; there is no deity except Him. Upon Him I have relied, and He is the Lord of the Great Throne.',
+    'Sunan Abu Dawud (5081). Reported authentically as a Mawquf statement of the noble companion Abu al-Darda (RA).',
+    'Reciting this seven times in the morning safeguards the reciter against whatever worldly or spiritual anxieties distress them throughout the day.'),
+  card('m-radhitu', 'Expression of Contentment with Faith', 3,
+    'رَضِيْتُ بِاللّٰهِ رَبًّا ، وَبِالْإِسْلَامِ دِيْنًا ، وَبِمُحَمَّدٍ نَّبِيًّا.',
+    "Raḍītu bi-llāhi Rabbā, wa bi-l-islāmi dīnā, wa bi Muḥammadin-Nabiyyā.",
+    'I am pleased with Allah as my Lord, with Islam as my religion, and with Muhammad ﷺ as my Prophet.',
+    'Sunan Abu Dawud (5072), Musnad Ahmad (18967); rated Sahih by Al-Albani',
+    'The Prophet ﷺ guaranteed that whoever says this three times in the morning, Allah takes it upon Himself to satisfy and please them on the Day of Judgment.'),
+  card('m-shield', 'The Shield Against Unexpected Harm', 3,
+    'بِسْمِ اللّٰهِ الَّذِيْ لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ ، وَهُوَ السَّمِيْعُ الْعَلِيْمُ.',
+    "Bismi-llāhi-lladhī lā yaḍurru ma'asmihi shay'un fi-l-arḍi wa lā fi-s-samā', wa Huwa-s-Samī'u-l-'Alīm.",
+    'In the name of Allah, with whose name nothing on earth or in the heavens can cause harm, and He is the All-Hearing, the All-Knowing.',
+    "Sunan Abu Dawud (5088), Jami' at-Tirmidhi (3388); rated Sahih by Al-Albani",
+    'Protects against sudden calamities. Anyone who recites this three times in the morning will remain safe from unexpected harm until evening.'),
+  card('m-subhan100', 'Subhanallahi wa Bihamdihi (100x Remembrance)', 100,
+    'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ.',
+    "Subḥāna-llāhi wa bi ḥamdih.",
+    'Glorified is Allah and praised is He.',
+    'Sahih Muslim (2692), Sahih al-Bukhari (6405)',
+    'Erases sins even if they are like the foam of the sea, and ensures no one brings a superior deed on Judgment Day except one who said the same or more.'),
+  card('m-tahleel', 'Declarative Tahleel (100x Monotheism)', 100,
+    'لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيْكَ لَهُ ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ.',
+    "Lā ilāha illā-Allāh, waḥdahū lā sharīka lah, lahu-l-mulk, wa lahu-l-ḥamd, wa Huwa 'alā kulli shay'in Qadīr.",
+    'There is no deity except Allah alone, without partner. To Him belongs sovereignty and to Him belongs praise, and He is over all things Omnipotent.',
+    'Sahih al-Bukhari (3293), Sahih Muslim (2691)',
+    'Equal to freeing ten slaves, grants 100 good deeds, wipes away 100 sins, and acts as a fortress against Satan for the entire day.'),
+  card('m-general', 'General Glorification (Tasbeeh, Tahmeed, Takbeer)', 100,
+    'سُبْحَانَ اللّٰهِ ، اَلْحَمْدُ لِلّٰهِ ، اَللّٰهُ أَكْبَرُ.',
+    "Subḥāna-llāh, Alḥamdu li-llāh, Allāhu akbar.",
+    'Glory be to Allah, all praise is due to Allah, Allah is the Greatest.',
+    'Sahih Muslim (2698)',
+    'Among the most beloved words to Allah, constantly refreshing the heart with remembrance and high spiritual reward.'),
+  card('m-salawat', 'Salawat upon the Prophet ﷺ (Durood Ibrahim)', 10,
+    'اَللّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَّعَلَىٰ اٰلِ مُحَمَّدٍ ، كَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيْمَ وَعَلَىٰ اٰلِ إِبْرَاهِيْمَ ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ ، اَللّٰهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَّعَلَىٰ اٰلِ مُحَمَّدٍ ، كَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيْمَ وَعَلَىٰ اٰلِ إِبْرَاهِيْمَ ، إِنَّكَ حَمِيْدٌ مَّجِيْدٌ.',
+    "Allāhumma ṣalli 'alā Muḥammad wa 'alā āli Muḥammad, kamā ṣallayta 'alā Ibrāhīma wa 'alā āli Ibrāhīm, innaka Ḥamīdu-m-Majīd, Allāhumma bārik 'alā Muḥammad, wa 'alā āli Muḥammad, kamā bārakta 'alā Ibrāhīma wa 'alā āli Ibrāhīm, innaka Ḥamīdu-m-Majīd.",
+    'O Allah, send blessings upon Muhammad and upon the family of Muhammad, as You sent blessings upon Abraham and upon the family of Abraham; indeed, You are Praiseworthy and Glorious. O Allah, send grace upon Muhammad and upon the family of Muhammad, as You sent grace upon Abraham and upon the family of Abraham; indeed, You are Praiseworthy and Glorious.',
+    'Sahih al-Bukhari (3370), Sahih Muslim (406), Al-Targhib wat-Tarheeb (1/273)',
+    'Sending blessings ten times brings ten blessings from Allah in return, relieves worries, and earns the intercession of the Prophet ﷺ.'),
+  card('m-istighfar', 'Daily Istighfar (Seeking Forgiveness 100x)', 100,
+    'أَسْتَغْفِرُ اللّٰهَ وَأَتُوْبُ إِلَيْهِ.',
+    "Astaghfiru-llāha wa atūbu ilayh.",
+    "I seek Allah's forgiveness and turn to Him in repentance.",
+    'Sahih al-Bukhari (6307), Sahih Muslim (2702)',
+    'Emulates the Sunnah of the Prophet ﷺ, who sought forgiveness and repented to Allah 70 to 100 times daily.'),
+  card('m-adada', "Heavy Remembrance (Subhanallahi wa Bihamdihi 'Adada Khalqihi)", 3,
+    'سُبْحَانَ اللّٰهِ وَبِحَمْدِهِ ، عَدَدَ خَلْقِهِ ، وَرِضَا نَفْسِهِ ، وَزِنَةَ عَرْشِهِ ، وَمِدَادَ كَلِمَاتِهِ.',
+    "Subḥāna-llāhi wa bi ḥamdih, 'adada khalqih, wa riḍā nafsih, wa zinata 'arshih, wa midāda kalimātih.",
+    'Glorified is Allah and praised is He, by the number of His creation, by His pleasure, by the weight of His Throne, and by the ink of His words.',
+    'Sahih Muslim (2726)',
+    'Exponential reward in minimal time. Taught to Juwayriyah (RA) as a supplication whose immense weight outweighs hours of continuous dhikr.'),
+  card('m-knowledge', 'Supplication for Beneficial Knowledge, Pure Provision, and Accepted Deeds', 1,
+    'اَللّٰهُمَّ إِنِّيْ أَسْأَلُكَ عِلْمًا نَافِعًا ، وَرِزْقًا طَيِّبًا ، وَعَمَلًا مُتَقَبَّلًا.',
+    "Allāhumma innī as'aluka 'ilman nāfi'an, wa rizqan ṭayyiban, wa 'amalan mutaqabbalan.",
+    'O Allah, I ask You for beneficial knowledge, wholesome provision, and accepted deeds.',
+    'Sunan Ibn Majah (925); authenticated by Al-Albani',
+    'Recited right after completing the Fajr prayer to ask Allah for the core elements of a productive, blessed day.'),
+] },
+  evening: { label: 'Evening', hint: 'Traditionally recited after Asr.', cards: [sample('e-sample-1', 1), sample('e-sample-2', 3)] },
+  bed: { label: 'Before Bed', hint: 'For as you settle into bed. Separate from the evening adhkar.', cards: [sample('b-sample-1', 1), sample('b-sample-2', 3)] },
+};
+const AD_KEY = 'faraj_adhkar';
+let adSection = 'morning';
+const adState = { date: '', counts: {} };
+const adDone = (c) => (adState.counts[c.id] || 0) >= c.count;
+const adFind = (id) => Object.values(ADHKAR).flatMap((s) => s.cards).find((c) => c.id === id);
+
+function loadAdhkar() {
+  adState.date = todayKey();
+  adState.counts = {};
+  try {
+    const s = JSON.parse(localStorage.getItem(AD_KEY));
+    if (s && s.date === adState.date && s.counts) adState.counts = s.counts;
+  } catch (e) {}
+}
+function saveAdhkar() { try { localStorage.setItem(AD_KEY, JSON.stringify(adState)); } catch (e) {} }
+function checkAdhkarDay() { if (todayKey() !== adState.date) { loadAdhkar(); renderAdhkar(); } }
+
+function adCard(c) {
+  const n = adState.counts[c.id] || 0, fin = n >= c.count;
+  const isAr = /[\u0600-\u06FF]/.test(c.arabic || '');
+  return `<div class="card ad${fin ? ' fin' : ''}">
+    ${c.sample ? '<div class="stag">SAMPLE CARD</div>' : ''}
+    <h3>${esc(c.title)}</h3>
+    ${c.arabic ? `<div class="${isAr ? 'arabic' : 'ph'}">${esc(c.arabic)}</div>` : ''}
+    ${c.transliteration ? `<div class="translit">${esc(c.transliteration).replace(/'/g, '’')}</div>` : ''}
+    ${c.translation ? `<div class="tr">“${esc(c.translation)}”</div>` : ''}
+    ${c.source ? `<div class="src">${esc(c.source)}</div>` : ''}
+    ${c.virtue ? `<hr><div class="label">VIRTUE</div><p class="body">${esc(c.virtue)}</p>` : ''}
+    <div class="cnt"><button class="tap${fin ? ' on' : ''}" data-tap="${esc(c.id)}">${fin ? '✓ Done' : c.count > 1 ? `Tap to count · ${n} / ${c.count}` : 'Tap when done'}</button>${n > 0 ? `<button class="undo" data-undo="${esc(c.id)}" aria-label="Reset this dhikr">↺</button>` : ''}</div>
+  </div>`;
+}
+
+function renderAdhkar() {
+  const st = $('adhkar').scrollTop;
+  const sec = ADHKAR[adSection];
+  const done = sec.cards.filter(adDone).length, total = sec.cards.length;
+  $('adhkar').innerHTML = `<div class="wrap">
+    <div class="header"><h1 class="title">Adhkar</h1><p class="subtitle">${esc(sec.hint)}</p></div>
+    <div class="seg">${Object.entries(ADHKAR).map(([k, v]) => `<button data-seg="${k}" class="${k === adSection ? 'on' : ''}">${esc(v.label)}</button>`).join('')}</div>
+    <div class="bar"><div class="fill" style="width:${total ? (done / total) * 100 : 0}%"></div></div>
+    <div class="prog adprog">${done} of ${total} done today</div>
+    ${sec.cards.map(adCard).join('')}
+  </div>`;
+  $('adhkar').scrollTop = st;
+}
+
+// Finishing every real Morning or Evening card also ticks it in the Garden
+function linkGarden() {
+  [['morning', 'morningAdhkar'], ['evening', 'eveningAdhkar']].forEach(([k, g]) => {
+    const cards = ADHKAR[k].cards;
+    if (cards.length && !ADHKAR[k].partial && !cards.some((c) => c.sample) && cards.every(adDone) && !state.dhikr[g]) { state.dhikr[g] = true; updateGarden(); }
+  });
+}
+
+$('adhkar').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.seg) { adSection = b.dataset.seg; renderAdhkar(); $('adhkar').scrollTop = 0; return; }
+  if (b.dataset.tap) { const c = adFind(b.dataset.tap); if (c && !adDone(c)) adState.counts[c.id] = (adState.counts[c.id] || 0) + 1; }
+  else if (b.dataset.undo) { delete adState.counts[b.dataset.undo]; }
+  else return;
+  saveAdhkar(); linkGarden(); renderAdhkar();
+});
+loadAdhkar();
+renderAdhkar();
+
+/* ---------- Offline support ---------- */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
