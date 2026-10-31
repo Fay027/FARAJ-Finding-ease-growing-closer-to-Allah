@@ -126,6 +126,19 @@ hr{border:0;height:1px;background:rgba(0,0,0,.1);margin:24px 0}
 .tap:active{transform:scale(.98)}
 .tap.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .undo{width:52px;min-height:52px;border-radius:999px;background:rgba(255,255,255,.5);font-size:20px}
+
+/* the heart: topics */
+.topics{margin-top:8px;padding-bottom:16px}
+.tt{font-family:var(--serif);font-size:22px;font-weight:400;text-align:center}
+.topics .subtitle{margin-bottom:8px}
+.topic{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:16px 20px;border-radius:20px;margin-top:12px;background:var(--green);border:1px solid var(--green-b);box-shadow:var(--shadow)}
+.topic b{display:block;font-size:16px;font-weight:600}
+.topic small{display:block;font-size:12px;margin-top:2px;opacity:.8}
+.chev{font-size:24px;opacity:.6}
+.tdua h4{font-family:var(--serif);font-size:16px;font-weight:600;margin-bottom:12px}
+.tdua + hr{margin:24px 0}
+.tnote{margin:8px 0}
+.xtra{margin-top:16px}
 @media(prefers-reduced-motion:reduce){.chip{animation:none}}
 </style>
 </head>
@@ -138,7 +151,7 @@ hr{border:0;height:1px;background:rgba(0,0,0,.1);margin:24px 0}
 </main>
 <nav id="tabbar">
   <button class="tab active" data-screen="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg><span>Home</span></button>
-  <button class="tab" data-screen="feel"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 5.7-8 11-8 11z"/></svg><span>How I Feel</span></button>
+  <button class="tab" data-screen="feel"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 5.7-8 11-8 11z"/></svg><span>The Heart</span></button>
   <button class="tab" data-screen="garden"><svg viewBox="0 0 24 24"><path d="M12 22V11M12 11c0-4 2-7 6-8 0 4-2 7-6 8zM12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg><span>Garden</span></button>
   <button class="tab" data-screen="adhkar"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h5v16H6a2 2 0 00-2 2V5zM20 5a2 2 0 00-2-2h-5v16h5a2 2 0 012 2V5z"/></svg><span>Adhkar</span></button>
 </nav>
@@ -412,19 +425,146 @@ renderDaily();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) renderDaily(); });
 
 /* ---------- How I Feel ---------- */
+const ayah3953 = DAILY_AYAHS.find((a) => a.source === 'Surah Az-Zumar 39:53');
+VERSES.push({ emotion: 'Guilt', color: '#E8E4F0', textColor: '#3D2C31', arabic: ayah3953.arabic, translation: ayah3953.translation, source: ayah3953.source,
+  hadith: 'Every son of Adam sins, and the best of those who sin are those who repent. (Jami’ at-Tirmidhi 2499)',
+  dua: 'O Allah, I turn back to You. Forgive me, accept my return, and do not let me despair of Your mercy.',
+  reflection: 'Guilt shows that your heart is alive and still cares. Let it lead you back to Allah, not away from Him. His mercy is greater than any mistake.' });
 const emotions = [...new Set(VERSES.map((v) => v.emotion))].map((name) => {
   const m = VERSES.find((v) => v.emotion === name);
   return { name, color: m.color || '#E4EFF2', textColor: m.textColor || '#3D2C31' };
 });
 
+/* Topics: a struggle, with encouragement, dua(s), intention, turning to Allah, and the practical means.
+   A dua can be { ref: 'card id' } to reuse a card from the Adhkar lists, or a full { title, arabic, transliteration, translation, source }. */
+const TOPICS = [
+  { id: 'debt', title: 'Debt', blurb: 'When what you owe weighs on your heart',
+    encouragement: 'Debt can weigh heavily on the heart, and you are not alone in carrying it. The Prophet ﷺ taught that whoever takes people’s wealth intending to repay it, Allah will fulfil it on his behalf (Sahih al-Bukhari 2387). And whoever has taqwa, Allah makes a way out for him.',
+    ayah: { arabic: 'وَمَن يَتَّقِ ٱللَّهَ يَجْعَل لَّهُۥ مَخْرَجًۭا (٢) وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥ ۚ إِنَّ ٱللَّهَ بَـٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍۢ قَدْرًۭا (٣)',
+      translation: '...And whoever fears Allah—He will make for him a way out. And will provide for him from where he does not expect. And whoever relies upon Allah—then He is sufficient for him. Indeed, Allah will accomplish His purpose. Allah has already set for everything a [decreed] extent.', source: 'Surah At-Talaq 65:2-3' },
+    duas: [ { ref: 'b-debt' },
+      { title: 'Dua for Halal Provision and Independence from Others', arabic: 'اللَّهُمَّ اكْفِنِي بِحَلاَلِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ',
+        transliteration: "Allāhumma-kfinī bi-ḥalālika 'an ḥarāmik, wa aghninī bi-faḍlika 'amman siwāk.",
+        translation: 'O Allah! Grant me enough of what You make lawful so that I may dispense with what You make unlawful, and enable me by Your Grace to dispense with all but You.',
+        source: "Jami' at-Tirmidhi (3563); graded Hasan" } ],
+    intention: 'I sincerely intend to repay what I owe, and I seek only what is halal.',
+    turn: 'Make istighfar, keep taqwa, and make the dua consistently.',
+    camel: 'Write down what you owe, talk to those you owe early, and ask a trustworthy adviser for guidance.' },
+  { id: 'marriage', title: 'Marriage', blurb: 'When you are waiting, and others seem to move ahead',
+    encouragement: 'Waiting can feel lonely, especially when the people around you seem to move ahead. Your timing is known to Allah. Prophet Musa (AS) had left everything behind, with no home, no money and no family, and he turned to Allah and said that he was in need of whatever good Allah would send down to him (28:24). After this dua, Allah opened doors for him: safety, work, and a family.',
+    duas: [ { title: 'The Dua of Prophet Musa (AS) in Need', arabic: 'رَبِّ إِنِّى لِمَآ أَنزَلْتَ إِلَىَّ مِنْ خَيْرٍۢ فَقِيرٌۭ', transliteration: 'Rabbi innī limā anzalta ilayya min khayrin faqīr.', translation: 'My Lord, indeed I am for any good that You bestow upon me very needy.', source: 'Surah Al-Qasas 28:24' },
+      { title: 'The Dua for Spouses and Family', arabic: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا', transliteration: 'Rabbanā hab lanā min azwājinā wa dhurriyyātinā qurrata a‘yunin waj‘alnā lil-muttaqīna imāmā.', translation: 'Our Lord! Grant unto us spouses and offspring who will be the comfort of our eyes, and give us (the grace) to lead the righteous.', source: 'Surah Al-Furqan 25:74' } ],
+    intention: 'I ask Allah for a righteous spouse, for companionship in worship and in life, and I trust His timing.',
+    turn: 'Keep asking, especially in sujood and in the quiet of the night. Ask Allah to make you content while you wait, and to guard your heart from comparing yourself with others.',
+    camel: 'Let your family or trusted friends know you are open to marriage, ask them for trustworthy introductions, and keep working on your own character and readiness.' },
+  { id: 'child-want', title: 'Longing for a Child', blurb: 'When you are longing for a child',
+    encouragement: 'The ache of waiting for a child is real. Prophet Zakariyya (AS) was very old and his wife was barren, yet he called on his Lord quietly and never stopped asking, and Allah gave him Yahya (19:2-7, 21:89-90). Whatever Allah decrees, your worth is not measured by whether you have children.',
+    duas: [ { title: 'The Dua of Prophet Zakariyya (AS)', arabic: 'رَبِّ لَا تَذَرْنِى فَرْدًۭا وَأَنتَ خَيْرُ ٱلْوَٰرِثِينَ', transliteration: 'Rabbi lā tadharnī fardan wa Anta khayru-l-wārithīn.', translation: 'My Lord! Do not leave me childless, though You are the Best of Successors.', source: 'Surah Al-Anbiya 21:89' } ],
+    intention: 'I ask Allah for righteous offspring, and I accept whatever He decrees.',
+    turn: 'Keep making dua, and keep making istighfar. The Qur’an links istighfar with provision and children (71:10-12).',
+    camel: 'See a doctor, together with your spouse if you are married, and follow medical advice.' },
+  { id: 'child-sick', title: 'A Sick Child', blurb: 'When your child is sick',
+    encouragement: 'Watching a child suffer can leave you feeling helpless and afraid. The Prophet ﷺ used to wipe over the sick with his right hand and make this dua (Sahih al-Bukhari 5675). You can do the same for your child.',
+    duas: [ { title: 'The Prophetic Healing Dua', arabic: 'أَذْهِبِ الْبَاسَ رَبَّ النَّاسِ، وَاشْفِ أَنْتَ الشَّافِي، لاَ شِفَاءَ إِلاَّ شِفَاؤُكَ، شِفَاءً لاَ يُغَادِرُ سَقَمًا', transliteration: 'Adhhibi-l-ba’sa Rabba-n-nās, washfi Anta-sh-Shāfī, lā shifā’a illā shifā’uk, shifā’an lā yughādiru saqamā.', translation: 'Remove the harm, O Lord of mankind, and heal, for You are the Healer. There is no healing but Your healing, a healing which leaves no disease behind.', source: 'Sahih al-Bukhari (5675)' } ],
+    intention: 'I entrust my child to Allah, the Healer, and I do everything within my means.',
+    turn: 'Recite the dua over your child, pray, and ask Allah for the strength to be patient and gentle.',
+    camel: 'Follow the doctor’s advice, ask questions, accept help so you can rest, and look after your own health too. In an emergency, get urgent medical care immediately.' },
+  { id: 'child-guide', title: 'A Child Who Is Hard to Guide', blurb: 'When your child is hard to guide',
+    encouragement: 'When you are exhausted and angry, the way of the prophets was to pray for their children’s guidance. Prophet Ibrahim (AS) asked Allah to make him and his descendants keep up the prayer, and to accept his dua (14:40).',
+    duas: [ { title: 'The Dua of Prophet Ibrahim (AS)', arabic: 'رَبِّ ٱجْعَلْنِى مُقِيمَ ٱلصَّلَوٰةِ وَمِن ذُرِّيَّتِى ۚ رَبَّنَا وَتَقَبَّلْ دُعَآءِ', transliteration: 'Rabbi-j‘alnī muqīma-ṣ-ṣalāti wa min dhurriyyatī, Rabbanā wa taqabbal du‘ā’.', translation: 'My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication.', source: 'Surah Ibrahim 14:40' },
+      { title: 'Dua for Righteous Offspring', arabic: 'وَوَصَّيْنَا ٱلْإِنسَـٰنَ بِوَٰلِدَيْهِ إِحْسَـٰنًا ۖ حَمَلَتْهُ أُمُّهُۥ كُرْهًۭا وَوَضَعَتْهُ كُرْهًۭا ۖ وَحَمْلُهُۥ وَفِصَـٰلُهُۥ ثَلَـٰثُونَ شَهْرًا ۚ حَتَّىٰٓ إِذَا بَلَغَ أَشُدَّهُۥ وَبَلَغَ أَرْبَعِينَ سَنَةًۭ قَالَ رَبِّ أَوْزِعْنِىٓ أَنْ أَشْكُرَ نِعْمَتَكَ ٱلَّتِىٓ أَنْعَمْتَ عَلَىَّ وَعَلَىٰ وَٰلِدَىَّ وَأَنْ أَعْمَلَ صَـٰلِحًۭا تَرْضَىٰهُ وَأَصْلِحْ لِى فِى ذُرِّيَّتِىٓ ۖ إِنِّى تُبْتُ إِلَيْكَ وَإِنِّى مِنَ ٱلْمُسْلِمِينَ',
+        translation: 'And We have enjoined upon man, to his parents, good treatment. His mother carried him with hardship and gave birth to him with hardship, and his bearing and weaning is thirty months. [He grows] until, when he reaches maturity and reaches [the age of] forty years, he says, ‘My Lord, enable me to be grateful for Your favour which You have bestowed upon me and upon my parents and to work righteousness of which You will approve and make righteous for me my offspring. Indeed, I have turned to You in repentance, and indeed, I am of the Muslims.’', source: 'Surah Al-Ahqaf 46:15' } ],
+    intention: 'I want my child’s guidance more than I want to win the argument, and I will be firm and gentle.',
+    turn: 'Calm yourself first with wudu and istighfar. Pray for your child by name, regularly, especially in sujood.',
+    camel: 'Listen to understand, set clear and fair boundaries, and ask a trusted elder or counsellor for support. If anyone’s safety is at risk, seek professional help.' },
+  { id: 'illness', title: 'Chronic Illness', blurb: 'When your body is tired and you feel like a burden',
+    encouragement: 'When the body fails, the heart can feel that it has become a burden. Prophet Ayyub (AS) was struck by harm, and he called out to his Lord (21:83). He did not demand a cure. He stated his condition and relied on Allah’s mercy. Allah answered him and gave him his family and more (21:84), and described him as an excellent and patient servant (38:44). The Prophet ﷺ also taught that no tiredness, illness, worry, sadness or harm touches a Muslim without Allah expiating some of his sins because of it (Sahih al-Bukhari 5641).',
+    duas: [ { title: 'The Dua of Prophet Ayyub (AS)', arabic: 'أَنِّى مَسَّنِىَ ٱلضُّرُّ وَأَنتَ أَرْحَمُ ٱلرَّٰحِمِينَ', transliteration: 'Annī massaniya-ḍ-ḍurru wa Anta arḥamu-r-rāḥimīn.', translation: 'Indeed, distress has touched me, and You are the Most Merciful of the merciful.', source: 'Surah Al-Anbiya 21:83' } ],
+    intention: 'I accept this trial with patience, and I ask Allah for healing and wellbeing.',
+    turn: 'Pray as you are able, even sitting or lying down. Keep dhikr on your tongue, and ask Allah for ‘afiyah.',
+    camel: 'Follow medical advice, tell your family and your doctor honestly about your pain and your needs, and accept practical help, including community or support groups.' },
+  { id: 'slander', title: 'Slander & Betrayal', blurb: 'When people spread lies about you',
+    encouragement: 'Aisha (RA) was left behind by the caravan on a journey and brought back to Madinah by a companion. The leader of the hypocrites and others then spread a cruel rumour about her. She fell ill after returning and did not know at first. When she learned of it, she wept until she felt the weeping would split her liver, knowing she was innocent but unable to prove it. She said she could only say what the father of Yusuf said: “Fa sabrun jameel” (12:18). Allah then revealed verses clearing her name (24:11-20). (Sahih al-Bukhari 4750)',
+    duas: [ { title: 'The Words of Prophet Ya‘qub (AS)', arabic: 'فَصَبْرٌ جَمِيلٌ ۖ وَٱللَّهُ ٱلْمُسْتَعَانُ عَلَىٰ مَا تَصِفُونَ', transliteration: 'Fa ṣabrun jamīl, wa-llāhu-l-musta‘ānu ‘alā mā taṣifūn.', translation: 'So beautiful patience is most fitting. And Allah is the one sought for help against that which you describe.', source: 'Surah Yusuf 12:18' } ],
+    intention: 'I leave my defence to Allah, I will not answer lies with lies, and I will keep my character clean.',
+    turn: 'Say “Fa sabrun jameel” and “Hasbunallahu wa ni‘mal wakeel”, pray, and remember that Allah knows the truth even when people do not.',
+    camel: 'Talk calmly with someone you trust. If the slander is written, keep records (messages, screenshots), report it to the platform or the proper authority if needed, and ask a trusted elder to speak the truth where you can’t.' },
+  { id: 'intimidation', title: 'Intimidation & Pressure', blurb: 'When you feel small and under pressure',
+    encouragement: 'After the hardship of Uhud, the companions were wounded and tired when they were warned that people had gathered against them. It only increased their faith, and they said, “Sufficient for us is Allah, and He is the best disposer of affairs” (3:173; Sahih al-Bukhari 4563).',
+    duas: [ { title: 'The Words of the Companions at Hamra al-Asad', arabic: 'حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ', transliteration: 'Ḥasbunā-llāhu wa ni‘ma-l-wakīl.', translation: 'Sufficient for us is Allah, and [He is] the best Disposer of affairs.', source: 'Surah Ali ‘Imran 3:173; Sahih al-Bukhari (4563)' } ],
+    intention: 'I rely on Allah and do what is within my power, and I will not let fear make my decisions.',
+    turn: 'Say “Hasbunallahu wa ni‘mal wakeel”, pray, and ask Allah for steadiness and clear thinking.',
+    camel: 'Write down what is happening (dates, what was said), speak to someone you trust, and use the proper channels (HR, a union, a lawyer or the authorities). If you are in danger, contact your local emergency services.' },
+];
+
+const SAD_EXTRA = {
+    encouragement: 'Sadness does not mean weak faith. Prophet Ya’qub (AS) grieved until his eyes turned white, yet he complained of his sorrow only to Allah (12:84-86). The Prophet ﷺ wept when his son Ibrahim died, saying the eyes shed tears and the heart grieves, and that we say only what pleases our Lord (Sahih al-Bukhari 1303). Even the Prophets felt this, and kept turning to Allah.',
+    ayah: { arabic: 'ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ',
+      translation: 'Those who believe and whose hearts find comfort in the remembrance of Allah. Surely in the remembrance of Allah do hearts find comfort.', source: 'Surah Ar-Ra’d 13:28' },
+    intention: 'I bring my sorrow to Allah instead of carrying it alone.',
+    turn: 'Pour it out to Him as Ya’qub (AS) did. Pray two rak’ahs, as the Prophet ﷺ turned to prayer when distressed (Sunan Abu Dawud 1319). Say “Hasbiyallah” and keep returning to dhikr, as in 13:28.',
+    camel: 'Speak to someone you trust. If the heaviness lasts, see a doctor or counsellor. The Prophet ﷺ taught that Allah sent down a cure with every illness (Sahih al-Bukhari 5678). If you ever feel unsafe, contact your local emergency number or a crisis line right away.' };
+
+const GUILT_EXTRA = {
+  encouragement: 'Guilt can make us feel too broken to face Allah. Prophet Yunus (AS) left his people in anger, boarded a ship, and was swallowed by the fish (37:139-142). In the darkness he did not despair. He called out, admitting his fault and glorifying Allah (21:87). The Prophet ﷺ said that no Muslim makes this dua for anything except that Allah answers it (Jami’ at-Tirmidhi 3505). And Allah says not to despair of His mercy, for He forgives all sins (39:53).',
+  ayah: { arabic: DAILY_AYAHS.find((a) => a.source === 'Surah Az-Zumar 39:53').arabic, translation: DAILY_AYAHS.find((a) => a.source === 'Surah Az-Zumar 39:53').translation, source: 'Surah Az-Zumar 39:53' },
+  dua: { title: 'The Dua of Prophet Yunus (AS)', arabic: 'لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَانَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ',
+    transliteration: 'Lā ilāha illā Anta, subḥānaka innī kuntu mina-ẓ-ẓālimīn.', translation: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.', source: 'Surah Al-Anbiya 21:87' },
+  intention: 'I return to Allah sincerely, I admit my mistake without despair, and I intend not to go back to it.',
+  turn: 'Say the dua of Yunus and Sayyid al-Istighfar, and cry to Him in private. Pray two rak’ahs in repentance.',
+  camel: 'Make amends where you can: return what you owe and apologise to anyone you wronged. If the guilt feels too heavy, speak to a trusted person or scholar. If it becomes overwhelming, or you ever feel unsafe, reach out for support right away.' };
+
+function extraBlocks(t, bg, fg) {
+  const p = (s) => `<p class="body">${esc(s)}</p>`;
+  const box = (label, inner) => `<div class="card ad xtra" style="background:${bg || '#B5C4A9'};color:${fg || '#3D2C31'};border-color:rgba(255,255,255,.6)"><div class="label">${label}</div>${inner}</div>`;
+  return `${box('ENCOURAGEMENT', p(t.encouragement) + `<hr><div class="arabic">${esc(t.ayah.arabic)}</div><div class="tr">“${esc(t.ayah.translation)}”</div><div class="src">${esc(t.ayah.source)}</div>`)}
+    ${t.dua ? box('DUA', duaBlock(t.dua)) : ''}
+    ${box('INTENTION', p(t.intention))}
+    ${box('TURN TO ALLAH', p(t.turn))}
+    ${box('TIE YOUR CAMEL', p(t.camel) + '<p class="src">Tie your camel, then place your trust in Allah. (Jami’ at-Tirmidhi 2517)</p>')}
+    <p class="subtitle tnote">A dua brings relief to the heart. It does not replace taking the means.</p>`;
+}
+const EXTRAS = { Sad: SAD_EXTRA, Guilt: GUILT_EXTRA };
+
+const duaBlock = (d) => `<div class="tdua"><h4>${esc(d.title)}</h4>
+  <div class="arabic">${esc(d.arabic)}</div>
+  ${d.transliteration ? `<div class="translit">${esc(d.transliteration).replace(/'/g, '’')}</div>` : ''}
+  <div class="tr">“${esc(d.translation)}”</div>
+  <div class="src">${esc(d.source).replace(/'/g, '’')}</div></div>`;
+
+function renderTopic(id) {
+  const t = TOPICS.find((x) => x.id === id);
+  if (!t) return;
+  const duas = t.duas.map((d) => (d.ref ? adFind(d.ref) : d)).filter(Boolean);
+  const p = (s) => `<p class="body">${esc(s)}</p>`;
+  const box = (label, inner) => `<div class="card ad"><div class="label">${label}</div>${inner}</div>`;
+  $('feel').innerHTML = `<div class="wrap">
+    <button class="back"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>
+    <div class="header"><h1 class="title">${esc(t.title)}</h1><p class="subtitle">${esc(t.blurb)}</p></div>
+    ${box('ENCOURAGEMENT', p(t.encouragement) + (t.ayah ? `<hr><div class="arabic">${esc(t.ayah.arabic)}</div><div class="tr">“${esc(t.ayah.translation)}”</div><div class="src">${esc(t.ayah.source)}</div>` : ''))}
+    ${box(duas.length > 1 ? 'DUAS' : 'DUA', duas.map(duaBlock).join('<hr>'))}
+    ${box('INTENTION', p(t.intention))}
+    ${box('TURN TO ALLAH', p(t.turn))}
+    ${box('TIE YOUR CAMEL', p(t.camel) + '<p class="src">Tie your camel, then place your trust in Allah. (Jami’ at-Tirmidhi 2517)</p>')}
+    <p class="subtitle tnote">A dua brings relief to the heart. It does not replace taking the means.</p>
+  </div>`;
+  $('feel').querySelector('.back').addEventListener('click', renderFeelList);
+  $('feel').scrollTop = 0;
+}
+
 function renderFeelList() {
   $('feel').innerHTML = `<div class="wrap">
-    <div class="header"><h1 class="title">How I Feel</h1>
-    <p class="subtitle">Select what your heart is carrying to find comfort in Allah's words.</p></div>
+    <div class="header"><h1 class="title">How is your heart today?</h1>
+    <p class="subtitle">Select what your heart is carrying to find comfort in Allah’s words.</p></div>
     <div class="chips">${emotions.map((e, i) =>
       `<button class="chip" data-e="${esc(e.name)}" style="background:${e.color};color:${e.textColor};animation-delay:${i * 0.2}s">${esc(e.name)}</button>`).join('')}
-    </div></div>`;
+    </div>
+    <div class="topics"><h2 class="tt">When it’s about something specific</h2>
+    <p class="subtitle">Find a dua, an intention and a step to take.</p>
+    ${TOPICS.map((t) => `<button class="topic" data-t="${t.id}"><span><b>${esc(t.title)}</b><small>${esc(t.blurb)}</small></span><span class="chev">›</span></button>`).join('')}
+    <p class="subtitle more">More topics coming soon, in sha Allah.</p></div></div>`;
   $('feel').querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => renderVerse(c.dataset.e)));
+  $('feel').querySelectorAll('.topic').forEach((b) => b.addEventListener('click', () => renderTopic(b.dataset.t)));
   $('feel').scrollTop = 0;
 }
 
@@ -447,7 +587,7 @@ function renderVerse(name) {
       ${v.dua ? sec("PERSONAL DU'A", v.dua, true) : ''}
       <div class="label">GENTLE TAKEAWAY</div>
       <p class="body">${esc(v.reflection)}</p>
-    </div></div>`;
+    </div>${EXTRAS[v.emotion] ? extraBlocks(EXTRAS[v.emotion], v.color || '#B5C4A9', v.textColor || '#3D2C31') : ''}</div>`;
   $('feel').querySelector('.back').addEventListener('click', renderFeelList);
   $('feel').scrollTop = 0;
 }
